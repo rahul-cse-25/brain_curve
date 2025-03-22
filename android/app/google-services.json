@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "449846743184",
+    "project_id": "brain-curve",
+    "storage_bucket": "brain-curve.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449846743184:android:b9469d7fae48f185fc8815",
+        "android_client_info": {
+          "package_name": "com.imp.brain_curve"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArQa5zFYJaog-c3Rd7gRc_ap7GOTWQJDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
