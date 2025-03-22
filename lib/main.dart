@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'Helper/showSnackbar.dart';
 import 'Provider/home.dart';
 import 'Provider/theme.dart';
+import 'Screens/auth/sign_in.dart';
 import 'Utils/colorful.dart';
 import 'firebase_options.dart';
 
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: themeProvider.themeMode,
-      home: const MyApp(),
+      home:  InternetWrapper(),
     );
   }
 }
