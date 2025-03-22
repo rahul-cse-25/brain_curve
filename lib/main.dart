@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: themeProvider.themeMode,
-      home: const InternetWrapper(),
+      home: const MyApp(),
     );
   }
 }

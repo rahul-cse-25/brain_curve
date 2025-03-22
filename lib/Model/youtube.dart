@@ -5,12 +5,14 @@ class VideoModel {
   final String description;
   final String thumbnail;
   final Uri videoUrl;
+  final String videoId;
 
-  VideoModel({
+  VideoModel( {
     required this.title,
     required this.description,
     required this.thumbnail,
     required this.videoUrl,
+    required this.videoId,
   });
 
   factory VideoModel.fromJson(Map<String, dynamic> json) {
@@ -19,6 +21,7 @@ class VideoModel {
       description: json['description'] ?? '',
       thumbnail: json['thumbnail'],
       videoUrl: _parseUri(json['video_url']),
+      videoId: json['video_id'],
     );
   }
 
@@ -28,6 +31,7 @@ class VideoModel {
       'description': description,
       'thumbnail': thumbnail,
       'video_url': videoUrl.toString(),
+      'video_id': videoId.toString(),
     };
   }
 

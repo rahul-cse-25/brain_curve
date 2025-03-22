@@ -234,7 +234,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       // main body
                       Expanded(
                         child: LiquidPullToRefresh(
-                          onRefresh: () => RecommendedVideoProvider().fetchVideos(context),
+                          onRefresh: () =>
+                              RecommendedVideoProvider().fetchVideos(context),
                           backgroundColor: Colors.white,
                           showChildOpacityTransition: false,
                           animSpeedFactor: 3.0,
@@ -414,9 +415,6 @@ class _RecommendedVideosState extends State<RecommendedVideos> {
 
           Consumer<RecommendedVideoProvider>(
             builder: (context, videos, child) {
-              if (videos.isLoading) {
-                return Center(child: CircularProgressIndicator());
-              }
               return videos.videos.isEmpty
                   ? Center(
                       child: Column(
@@ -456,70 +454,77 @@ class _RecommendedVideosState extends State<RecommendedVideos> {
   Widget _buildChallengeCard(VideoModel videoModel) {
     return Padding(
       padding: style.brainCurveAllScreenPadding(hor: 0, ver: 2),
-      child: ClipRRect(
-        clipBehavior: Clip.hardEdge,
-        borderRadius:
-            BorderRadius.circular(style.sizes.horizontalBlockSize * 6),
-        child: Stack(
-          children: [
-            Container(
-              constraints: BoxConstraints(
-                minWidth: style.sizes.screenWidth,
-                minHeight: style.sizes.screenHeight * 0.2,
+      child: Hero(
+        tag: videoModel.videoId,
+        child: ClipRRect(
+          clipBehavior: Clip.hardEdge,
+          borderRadius:
+              BorderRadius.circular(style.sizes.horizontalBlockSize * 6),
+          child: Stack(
+            children: [
+              Container(
+                constraints: BoxConstraints(
+                  minWidth: style.sizes.screenWidth,
+                  minHeight: style.sizes.screenHeight * 0.2,
+                ),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage(videoModel.thumbnail),
+                      fit: BoxFit.cover),
+                ),
               ),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage(videoModel.thumbnail),
-                    fit: BoxFit.cover),
-              ),
-            ),
 
-            // Text Content
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: Colors.white,
-                child: Text(videoModel.title,
-                    textAlign: TextAlign.center,
-                    style: style.subHeaderStyle(color: context.containerColor)),
+              // Text Content
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: style.brainCurveAllScreenPadding(ver: 1, hor: 2),
+                    child: Text(videoModel.title,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: style.subHeaderStyle(color: Colors.black)),
+                  ),
+                ),
               ),
-            ),
 
-            Positioned(
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: GestureDetector(
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            VideoDetail(videoModel: videoModel),
-                      )),
-                  child: Container(
-                    padding: style.brainCurveAllScreenPadding(ver: 2, hor: 2),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                          style.sizes.horizontalBlockSize * 8),
-                      gradient: LinearGradient(
-                        colors: [Colors.white, Colors.white],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              VideoDetail(videoModel: videoModel),
+                        )),
+                    child: Container(
+                      padding: style.brainCurveAllScreenPadding(ver: 2, hor: 2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                            style.sizes.horizontalBlockSize * 8),
+                        gradient: LinearGradient(
+                          colors: [Colors.white, Colors.white],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
                       ),
-                    ),
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.deepPurpleAccent,
+                      child: Icon(
+                        Icons.play_arrow,
+                        color: Colors.deepPurpleAccent,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
