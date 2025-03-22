@@ -3,7 +3,7 @@ import 'dart:convert';
 class VideoModel {
   final String title;
   final String description;
-  final Uri? thumbnail;
+  final String thumbnail;
   final Uri? videoUrl;
 
   VideoModel({
@@ -18,7 +18,7 @@ class VideoModel {
     return VideoModel(
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      thumbnail: _parseUri(json['thumbnail']),
+      thumbnail: json['thumbnail'],
       videoUrl: _parseUri(json['video_url']),
     );
   }
@@ -28,7 +28,7 @@ class VideoModel {
     return {
       'title': title,
       'description': description,
-      'thumbnail': thumbnail?.toString(),
+      'thumbnail': thumbnail,
       'video_url': videoUrl?.toString(),
     };
   }

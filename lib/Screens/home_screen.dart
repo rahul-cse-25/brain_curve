@@ -1,4 +1,5 @@
 import 'package:brain_curve/Extension/theme.dart';
+import 'package:brain_curve/Model/youtube.dart';
 import 'package:brain_curve/Provider/recommended_videos.dart';
 import 'package:brain_curve/Utils/colors.dart';
 import 'package:brain_curve/Utils/customize_style.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../Provider/home.dart';
+import '../Widget/videos.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -130,53 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onCanceled: () =>
                                         menuProvider.toggleMenu(false),
                                     onSelected: (value) async {
-                                      // if (value == "About me") {
-                                      //   menuProvider.toggleMenu(false);
-                                      //   Navigator.push(
-                                      //     context,
-                                      //     PageRouteBuilder(
-                                      //       pageBuilder: (context, animation,
-                                      //           secondaryAnimation) {
-                                      //         return AboutMe();
-                                      //       },
-                                      //       transitionsBuilder: (context,
-                                      //           animation,
-                                      //           secondaryAnimation,
-                                      //           child) =>
-                                      //           SlideTransition(
-                                      //             position: animation.drive(Tween(
-                                      //                 begin: const Offset(0.0, 1.0),
-                                      //                 end: Offset.zero)),
-                                      //             child: ScaleTransition(
-                                      //                 scale: animation.drive(Tween(
-                                      //                     begin: 0.0, end: 1.0)),
-                                      //                 child: child),
-                                      //           ),
-                                      //     ),
-                                      //   );
-                                      // }
-                                      // else if (value == "All Users") {
-                                      //   menuProvider.toggleMenu(false);
-                                      //   Navigator.push(
-                                      //     context,
-                                      //     PageRouteBuilder(
-                                      //       pageBuilder: (context, animation,
-                                      //           secondaryAnimation) {
-                                      //         return LocalUser();
-                                      //       },
-                                      //       transitionsBuilder: (context,
-                                      //           animation,
-                                      //           secondaryAnimation,
-                                      //           child) =>
-                                      //           SlideTransition(
-                                      //             position: animation.drive(Tween(
-                                      //                 begin: const Offset(1.0, 0.0),
-                                      //                 end: Offset.zero)),
-                                      //             child: child,
-                                      //           ),
-                                      //     ),
-                                      //   );
-                                      // }
                                       if (value == "Light" || value == "Dark") {
                                         menuProvider.toggleMenu(false);
                                         context.toggleTheme();
@@ -425,51 +380,6 @@ class RecommendedVideos extends StatefulWidget {
 class _RecommendedVideosState extends State<RecommendedVideos> {
   final BrainCurveCustomizeStyle style = BrainCurveCustomizeStyle();
 
-  final List<Map<String, String>> challenges = [
-    {
-      "title": "Cardio Endurance",
-      "subtitle": "Master of endurance Pro",
-      "image": "assets/cardio.jpg",
-      "tag": "End in 11 days"
-    },
-    {
-      "title": "Strength Training",
-      "subtitle": "Push yourself to the limit",
-      "image": "assets/strength.jpg",
-      "tag": "End in 6 days"
-    },
-    {
-      "title": "Yoga Flexibility",
-      "subtitle": "Find your inner peace",
-      "image": "assets/yoga.jpg",
-      "tag": "End in 7 days"
-    },
-    {
-      "title": "Yoga Flexibility",
-      "subtitle": "Find your inner peace",
-      "image": "assets/yoga.jpg",
-      "tag": "End in 7 days"
-    },
-    {
-      "title": "Yoga Flexibility",
-      "subtitle": "Find your inner peace",
-      "image": "assets/yoga.jpg",
-      "tag": "End in 7 days"
-    },
-    {
-      "title": "Yoga Flexibility",
-      "subtitle": "Find your inner peace",
-      "image": "assets/yoga.jpg",
-      "tag": "End in 7 days"
-    },
-    {
-      "title": "Yoga Flexibility",
-      "subtitle": "Find your inner peace",
-      "image": "assets/yoga.jpg",
-      "tag": "End in 7 days"
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -493,31 +403,51 @@ class _RecommendedVideosState extends State<RecommendedVideos> {
             ],
           ),
 
-          // ListView.builder(
-          //   physics: NeverScrollableScrollPhysics(),
-          //   shrinkWrap: true,
-          //   itemCount: challenges.length,
-          //   itemBuilder: (context, index) {
-          //     final challenge = challenges[index];
-          //     return _buildChallengeCard(
-          //         challenge["title"]!,
-          //         challenge["subtitle"]!,
-          //         challenge["image"]!,
-          //         challenge["tag"]!,
-          //         context);
-          //   },
-          // ),
+          //
           Consumer<RecommendedVideoProvider>(
-            builder: (context, value, child) {
-              if (value.isLoading) {
+            builder: (context, videos, child) {
+              if (videos.isLoading) {
                 return Center(
                   child: Padding(
                     padding: EdgeInsets.only(
                         top: style.sizes.horizontalBlockSize * 4),
-                    
                   ),
                 );
               }
+              return videos.videos.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // style.offiqlLottieImage(
+                          //     'assets/json/no_data.json',
+                          //     widthInPercent: 100),
+                          Padding(
+                            padding: style.brainCurveAllScreenPadding(),
+                            child: Text(
+                              "No User found, Please pull to refresh.",
+                              textAlign: TextAlign.center,
+                              style: context.textTheme.headlineSmall!
+                                  .copyWith(color: Colors.grey),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: videos.videos.length,
+                      itemBuilder: (context, index) {
+                        VideoModel video = videos.videos[index];
+                        return _buildChallengeCard(
+                            video.title,
+                            video.description,
+                            video.thumbnail,
+                            video.videoUrl,
+                            context);
+                      },
+                    );
             },
           )
         ],
@@ -525,8 +455,8 @@ class _RecommendedVideosState extends State<RecommendedVideos> {
     );
   }
 
-  Widget _buildChallengeCard(String title, String subtitle, String imagePath,
-      String tag, BuildContext context) {
+  Widget _buildChallengeCard(String title, String description, String thumbnail,
+      Uri? video, BuildContext context) {
     return Padding(
       padding: style.brainCurveAllScreenPadding(hor: 0, ver: 2),
       child: Stack(
@@ -534,12 +464,13 @@ class _RecommendedVideosState extends State<RecommendedVideos> {
           ClipRRect(
             borderRadius:
                 BorderRadius.circular(style.sizes.horizontalBlockSize * 8),
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.cover,
-            ),
+            child: video != null
+                ? VideoPlayerWidget(videoUrl: video) // 🎥 Video Player
+                : (thumbnail != null
+                    ? Image.network(thumbnail.toString(),
+                        fit: BoxFit.cover) // 🖼 Thumbnail
+                    : Container(color: Colors.grey)), // 📌 Default Placeholder
           ),
-
           Container(
             height: style.sizes.screenHeight * 0.2,
             decoration: BoxDecoration(
@@ -565,28 +496,28 @@ class _RecommendedVideosState extends State<RecommendedVideos> {
               children: [
                 Text(title,
                     style: style.subHeaderStyle(color: context.containerColor)),
-                Text(subtitle,
+                Text(description,
                     style: style.subHeaderStyle(color: context.containerColor)),
               ],
             ),
           ),
 
           // Tag (Top Left)
-          Positioned(
-            top: style.sizes.verticalBlockSize * 1,
-            left: style.sizes.horizontalBlockSize * 3,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black54,
-                borderRadius:
-                    BorderRadius.circular(style.sizes.horizontalBlockSize * 6),
-              ),
-              child: Text(
-                tag,
-                style: style.subHeaderStyle(color: context.containerColor),
+          if (thumbnail != null)
+            Positioned(
+              top: style.sizes.verticalBlockSize * 1,
+              left: style.sizes.horizontalBlockSize * 3,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(
+                      style.sizes.horizontalBlockSize * 6),
+                ),
+                child: Image.network(
+                  thumbnail as String,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

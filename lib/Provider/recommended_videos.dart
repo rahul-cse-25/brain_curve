@@ -50,7 +50,8 @@ class RecommendedVideoProvider extends ChangeNotifier {
     try {
       final response = await http.get(Uri.parse('$baseUrl/api/content/abc'));
       if (response.statusCode == 200) {
-        List<dynamic> videoList = json.decode(response.body);
+        Map<String,dynamic> data = json.decode(response.body);
+       List<dynamic> videoList=data["videos"];
 
         videos = videoList.map((video) => VideoModel.fromJson(video)).toList();
       } else {
