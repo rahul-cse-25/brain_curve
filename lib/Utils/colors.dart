@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 const Color backGroundColorLight = Color(0xFFF2E6FF);
 
 const Color backGroundColorDark = Color(0xFF212529);
-const Color appNameColor = Color(0xff0d6244);
+
 
 const Color cardDark = Color(0xFF2B2F33);
 

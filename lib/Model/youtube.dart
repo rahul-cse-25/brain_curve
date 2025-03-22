@@ -1,0 +1,53 @@
+import 'dart:convert';
+
+class VideoModel {
+  final String title;
+  final String description;
+  final Uri? thumbnail;
+  final Uri? videoUrl;
+
+  VideoModel({
+    required this.title,
+    required this.description,
+    required this.thumbnail,
+    required this.videoUrl,
+  });
+
+
+  factory VideoModel.fromJson(Map<String, dynamic> json) {
+    return VideoModel(
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      thumbnail: _parseUri(json['thumbnail']),
+      videoUrl: _parseUri(json['video_url']),
+    );
+  }
+
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'description': description,
+      'thumbnail': thumbnail?.toString(),
+      'video_url': videoUrl?.toString(),
+    };
+  }
+
+  // Convert JSON List to List of VideoModel objects
+  static List<VideoModel> fromJsonList(String jsonString) {
+    final Map<String, dynamic> decodedData = json.decode(jsonString);
+    final List<dynamic> videoList = decodedData['videos'] ?? [];
+
+    return videoList.map((video) => VideoModel.fromJson(video)).toList();
+  }
+
+  // Utility function to parse URLs properly
+  static Uri? _parseUri(String? url) {
+    if (url == null || url.isEmpty) return null;
+    try {
+      return Uri.parse(url);
+    } catch (e) {
+      return null;
+    }
+  }
+}

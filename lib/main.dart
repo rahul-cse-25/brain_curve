@@ -1,3 +1,4 @@
+import 'package:brain_curve/Provider/recommended_videos.dart';
 import 'package:brain_curve/Screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()..loadTheme()),
         ChangeNotifierProvider(create: (_) => HomeProvider()),
+        ChangeNotifierProvider(create: (_) => RecommendedVideoProvider()),
       ],
       child: const MyApp(),
     ),

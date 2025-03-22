@@ -19,6 +19,8 @@ extension ThemeExtension on BuildContext {
 
   get backgroundColor =>
       isDarkMode ? backGroundColorDark : backGroundColorLight;
+  get containerColor =>
+      isDarkMode ? backGroundColorLight : backGroundColorDark;
 
   get cardBg => isDarkMode ? cardDark : backGroundColorLight;
 
