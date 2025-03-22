@@ -1,16 +1,15 @@
 import 'package:brain_curve/Extension/theme.dart';
 import 'package:brain_curve/Model/youtube.dart';
 import 'package:brain_curve/Provider/recommended_videos.dart';
-import 'package:brain_curve/Utils/colors.dart';
+import 'package:brain_curve/Screens/video_detail.dart';
 import 'package:brain_curve/Utils/customize_style.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../Provider/home.dart';
-import '../Widget/videos.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 body: SafeArea(
                   child: Column(
                     children: [
+                      // appbar
                       Container(
                         color: context.containerColor,
                         child: Padding(
@@ -231,11 +231,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
+                      // main body
                       Expanded(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: Column(
-                            children: [BrainCurve(), RecommendedVideos()],
+                        child: LiquidPullToRefresh(
+                          onRefresh: () => RecommendedVideoProvider().fetchVideos(context),
+                          backgroundColor: Colors.white,
+                          showChildOpacityTransition: false,
+                          animSpeedFactor: 3.0,
+                          springAnimationDurationInMilliseconds: 500,
+                          height: style.sizes.screenHeight * 0.1,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Column(
+                              children: [BrainCurve(), RecommendedVideos()],
+                            ),
                           ),
                         ),
                       )
@@ -286,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
 class BrainCurve extends StatelessWidget {
   BrainCurve({super.key});
 
-  BrainCurveCustomizeStyle style = BrainCurveCustomizeStyle();
+  final BrainCurveCustomizeStyle style = BrainCurveCustomizeStyle();
 
   @override
   Widget build(BuildContext context) {
@@ -403,16 +412,10 @@ class _RecommendedVideosState extends State<RecommendedVideos> {
             ],
           ),
 
-          //
           Consumer<RecommendedVideoProvider>(
             builder: (context, videos, child) {
               if (videos.isLoading) {
-                return Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        top: style.sizes.horizontalBlockSize * 4),
-                  ),
-                );
+                return Center(child: CircularProgressIndicator());
               }
               return videos.videos.isEmpty
                   ? Center(
@@ -425,7 +428,7 @@ class _RecommendedVideosState extends State<RecommendedVideos> {
                           Padding(
                             padding: style.brainCurveAllScreenPadding(),
                             child: Text(
-                              "No User found, Please pull to refresh.",
+                              "No Video found, Please pull to refresh.",
                               textAlign: TextAlign.center,
                               style: context.textTheme.headlineSmall!
                                   .copyWith(color: Colors.grey),
@@ -440,12 +443,7 @@ class _RecommendedVideosState extends State<RecommendedVideos> {
                       itemCount: videos.videos.length,
                       itemBuilder: (context, index) {
                         VideoModel video = videos.videos[index];
-                        return _buildChallengeCard(
-                            video.title,
-                            video.description,
-                            video.thumbnail,
-                            video.videoUrl,
-                            context);
+                        return _buildChallengeCard(video);
                       },
                     );
             },
@@ -455,70 +453,74 @@ class _RecommendedVideosState extends State<RecommendedVideos> {
     );
   }
 
-  Widget _buildChallengeCard(String title, String description, String thumbnail,
-      Uri? video, BuildContext context) {
+  Widget _buildChallengeCard(VideoModel videoModel) {
     return Padding(
       padding: style.brainCurveAllScreenPadding(hor: 0, ver: 2),
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius:
-                BorderRadius.circular(style.sizes.horizontalBlockSize * 8),
-            child: video != null
-                ? VideoPlayerWidget(videoUrl: video) // 🎥 Video Player
-                : (thumbnail != null
-                    ? Image.network(thumbnail.toString(),
-                        fit: BoxFit.cover) // 🖼 Thumbnail
-                    : Container(color: Colors.grey)), // 📌 Default Placeholder
-          ),
-          Container(
-            height: style.sizes.screenHeight * 0.2,
-            decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(style.sizes.horizontalBlockSize * 8),
-              gradient: LinearGradient(
-                colors: [
-                  Colors.black.withValues(alpha: 0.5),
-                  Colors.transparent
-                ],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
+      child: ClipRRect(
+        clipBehavior: Clip.hardEdge,
+        borderRadius:
+            BorderRadius.circular(style.sizes.horizontalBlockSize * 6),
+        child: Stack(
+          children: [
+            Container(
+              constraints: BoxConstraints(
+                minWidth: style.sizes.screenWidth,
+                minHeight: style.sizes.screenHeight * 0.2,
+              ),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage(videoModel.thumbnail),
+                    fit: BoxFit.cover),
               ),
             ),
-          ),
 
-          // Text Content
-          Positioned(
-            bottom: style.sizes.verticalBlockSize * 1,
-            left: style.sizes.horizontalBlockSize * 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title,
-                    style: style.subHeaderStyle(color: context.containerColor)),
-                Text(description,
-                    style: style.subHeaderStyle(color: context.containerColor)),
-              ],
-            ),
-          ),
-
-          // Tag (Top Left)
-          if (thumbnail != null)
+            // Text Content
             Positioned(
-              top: style.sizes.verticalBlockSize * 1,
-              left: style.sizes.horizontalBlockSize * 3,
+              bottom: 0,
+              left: 0,
+              right: 0,
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.circular(
-                      style.sizes.horizontalBlockSize * 6),
-                ),
-                child: Image.network(
-                  thumbnail as String,
+                color: Colors.white,
+                child: Text(videoModel.title,
+                    textAlign: TextAlign.center,
+                    style: style.subHeaderStyle(color: context.containerColor)),
+              ),
+            ),
+
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            VideoDetail(videoModel: videoModel),
+                      )),
+                  child: Container(
+                    padding: style.brainCurveAllScreenPadding(ver: 2, hor: 2),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                          style.sizes.horizontalBlockSize * 8),
+                      gradient: LinearGradient(
+                        colors: [Colors.white, Colors.white],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.deepPurpleAccent,
+                    ),
+                  ),
                 ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }

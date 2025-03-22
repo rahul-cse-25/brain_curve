@@ -4,7 +4,7 @@ class VideoModel {
   final String title;
   final String description;
   final String thumbnail;
-  final Uri? videoUrl;
+  final Uri videoUrl;
 
   VideoModel({
     required this.title,
@@ -12,7 +12,6 @@ class VideoModel {
     required this.thumbnail,
     required this.videoUrl,
   });
-
 
   factory VideoModel.fromJson(Map<String, dynamic> json) {
     return VideoModel(
@@ -23,13 +22,12 @@ class VideoModel {
     );
   }
 
-
   Map<String, dynamic> toJson() {
     return {
       'title': title,
       'description': description,
       'thumbnail': thumbnail,
-      'video_url': videoUrl?.toString(),
+      'video_url': videoUrl.toString(),
     };
   }
 
@@ -42,12 +40,12 @@ class VideoModel {
   }
 
   // Utility function to parse URLs properly
-  static Uri? _parseUri(String? url) {
-    if (url == null || url.isEmpty) return null;
+  static Uri _parseUri(String url) {
+    // if (url == null || url.isEmpty) return null;
     try {
       return Uri.parse(url);
     } catch (e) {
-      return null;
+      return Uri();
     }
   }
 }

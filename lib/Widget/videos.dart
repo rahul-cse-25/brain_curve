@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-
 class VideoPlayerWidget extends StatefulWidget {
   final Uri videoUrl;
 
-  const VideoPlayerWidget({Key? key, required this.videoUrl}) : super(key: key);
+  const VideoPlayerWidget({super.key, required this.videoUrl});
 
   @override
-  _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
+  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
@@ -17,10 +16,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.networkUrl(widget.videoUrl)
-      ..initialize().then((_) {
-        setState(() {});
-      });
+    _controller = VideoPlayerController.networkUrl(widget.videoUrl);
   }
 
   @override
@@ -29,35 +25,44 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.dispose();
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return _controller.value.isInitialized
+  //       ? Stack(
+  //           alignment: Alignment.center,
+  //           children: [
+  //             AspectRatio(
+  //               aspectRatio: _controller.value.aspectRatio,
+  //               child: VideoPlayer(_controller),
+  //             ),
+  //             // IconButton(
+  //             //   icon: Icon(
+  //             //     _controller.value.isPlaying
+  //             //         ? Icons.pause
+  //             //         : Icons.play_arrow,
+  //             //     color: Colors.white,
+  //             //     size: 40,
+  //             //   ),
+  //             //   onPressed: () {
+  //             //     setState(() {
+  //             //       _controller.value.isPlaying
+  //             //           ? _controller.pause()
+  //             //           : _controller.play();
+  //             //     });
+  //             //   },
+  //             // ),
+  //           ],
+  //         )
+  //       : CircularProgressIndicator();
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: _controller.value.isInitialized
-          ? Stack(
-        alignment: Alignment.center,
-        children: [
-          AspectRatio(
+    return _controller.value.isInitialized
+        ? AspectRatio(
             aspectRatio: _controller.value.aspectRatio,
             child: VideoPlayer(_controller),
-          ),
-          IconButton(
-            icon: Icon(
-              _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-              color: Colors.white,
-              size: 40,
-            ),
-            onPressed: () {
-              setState(() {
-                _controller.value.isPlaying ? _controller.pause() : _controller.play();
-              });
-            },
-          ),
-        ],
-      )
-          : CircularProgressIndicator(),
-    );
+          )
+        : Center(child: CircularProgressIndicator());
   }
 }
-
-
